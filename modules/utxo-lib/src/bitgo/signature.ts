@@ -8,7 +8,6 @@ import {
   Transaction,
   TxInput,
   schnorrBip340,
-  classify,
   taproot,
   TxOutput,
   ScriptSignature,
@@ -25,6 +24,7 @@ import {
   scriptType2Of3AsPrevOutType,
 } from './outputScripts';
 import { isTriple, Triple } from './types';
+import { classify } from '../';
 import { getMainnet, Network, networks } from '../networks';
 
 const inputTypes = [
