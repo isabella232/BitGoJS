@@ -1,17 +1,7 @@
 import * as opcodes from 'bitcoin-ops';
 import * as bip32 from 'bip32';
 
-import {
-  ECPair,
-  payments,
-  script,
-  Transaction,
-  TxInput,
-  schnorrBip340,
-  taproot,
-  TxOutput,
-  ScriptSignature,
-} from 'bitcoinjs-lib';
+import { payments, script, Transaction, TxInput, taproot, TxOutput, ScriptSignature } from 'bitcoinjs-lib';
 
 import { UtxoTransaction } from './UtxoTransaction';
 import { UtxoTransactionBuilder } from './UtxoTransactionBuilder';
@@ -26,6 +16,7 @@ import {
 import { isTriple, Triple } from './types';
 import { classify } from '../';
 import { getMainnet, Network, networks } from '../networks';
+import { ECPair, ecc as eccLib } from '../noble_ecc';
 
 const inputTypes = [
   'multisig',
@@ -188,7 +179,7 @@ export function parseSignatureScript(
       throw new Error(`tapscript must be n of n multisig`);
     }
 
-    const publicKeys = payments.p2tr_ns({ output: tapscript }).pubkeys;
+    const publicKeys = payments.p2tr_ns({ output: tapscript }, { eccLib }).pubkeys;
     if (!publicKeys || publicKeys.length !== 2) {
       throw new Error('expected 2 pubkeys');
     }
@@ -485,7 +476,7 @@ export function getSignatureVerifications(
       if (!controlBlock) {
         throw new Error('expected controlBlock');
       }
-      const leafHash = taproot.getTapleafHash(controlBlock, pubScript);
+      const leafHash = taproot.getTapleafHash(eccLib, controlBlock, pubScript);
       const signatureHash = transaction.hashForWitnessV1(
         inputIndex,
         prevOutputs.map(({ script }) => script),
@@ -495,7 +486,7 @@ export function getSignatureVerifications(
       );
 
       const signedBy = publicKeys.filter(
-        (k) => Buffer.isBuffer(signatureBuffer) && schnorrBip340.verifySchnorr(signatureHash, k, signatureBuffer)
+        (k) => Buffer.isBuffer(signatureBuffer) && eccLib.verifySchnorr(signatureHash, k, signatureBuffer)
       );
 
       if (signedBy.length === 0) {
