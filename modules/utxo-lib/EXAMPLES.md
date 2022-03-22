@@ -9,12 +9,3 @@ Many examples for Bitcoin, Bitcoin Cash, Bitcoin Gold, Bitcoin SV, and Litecoin 
 ## Bitcoin Gold
 
 * [Create Address](./examples/utxo/create-address-gold.ts)
-
-## Dash
-
-* [Create Address](./examples/dash/create-address.ts)
-
-## Zcash
-
-* [Create Transparent Address](./examples/zcash/create-address.ts)
-* [Create Private Address](./examples/zcash/create-address.ts)
